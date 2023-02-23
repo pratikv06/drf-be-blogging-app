@@ -2,6 +2,8 @@
 
 DOCKEREXECPY := docker exec -it blog-restapi python manage.py 
 DOCKEREXEC := docker exec -it blog-restapi 
+DOCKERDEV := docker-compose -f docker-compose.dev.yml
+DOCKERPROD := docker-compose -f docker-compose.dev.yml
 
 help:
 	@echo "Blog API Commands"
@@ -22,19 +24,19 @@ help:
 	@echo -e "-------------------------------------------------------"
 
 status:
-	@docker-compose ps --all
+	@$(DOCKERDEV) ps --all
 
 build:
-	@docker-compose build 
+	@$(DOCKERDEV) build
 
 start: format
-	@docker-compose up -d
+	@$(DOCKERDEV) up 
 
 stop:
-	@docker-compose stop
+	@$(DOCKERDEV) stop
 
 down:
-	@docker-compose down
+	@$(DOCKERDEV) down
 
 restart: down start
 
@@ -57,9 +59,10 @@ cli:
 	@$(DOCKEREXEC) bash
 
 clean:
-	@docker-compose down --remove-orphans --volumes
-	@docker-compose rm --force
-	@find . -name \*.pyc -delete
+	@$(DOCKERDEV) down --remove-orphans --volumes
+	@$(DOCKERDEV) rm --force
+	@sudo find . -name \*.pyc -delete
 
 format:
+	@isort -rc ./src
 	@black ./src

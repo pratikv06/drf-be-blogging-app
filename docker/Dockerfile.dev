@@ -19,13 +19,13 @@ RUN apt-get update && \
 WORKDIR /src/app
 
 # install dependencies
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+COPY requirements.txt /src/requirements.txt
+RUN pip install -r /src/requirements.txt
 
 # Setup entrypoint 
-COPY docker-entrypoint.sh .
-RUN chmod a+x ./docker-entrypoint.sh
-ENTRYPOINT ["./docker-entrypoint.sh"]
+COPY docker/docker-entrypoint.sh /src/docker-entrypoint.sh
+RUN chmod a+x /src/docker-entrypoint.sh
+ENTRYPOINT ["/src/docker-entrypoint.sh"]
 
 # copy project
 COPY ./src/ .
