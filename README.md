@@ -30,15 +30,17 @@ Furthermore, we can obtain the test coverage result, which will show the percent
 # Commands
 1. Install and Start Docker/Project:  
     ```
-    docker-compose up
+    docker-compose -f docker-compose.dev.yml build
+    docker-compose -f docker-compose.dev.yml up
     ```
     or
     ```
+    make build
     make start
     ```
 2. Stop Docker/Project:
     ```
-    docker-compose stop
+    docker-compose -f docker-compose.dev.yml stop
     ```
     or 
     ``` 
@@ -46,7 +48,7 @@ Furthermore, we can obtain the test coverage result, which will show the percent
     ``` 
 3. Remove the Container:
     ```
-    docker-compose down
+    docker-compose -f docker-compose.dev.yml down
     ```
     or 
     ```
@@ -54,8 +56,8 @@ Furthermore, we can obtain the test coverage result, which will show the percent
     ```
 4. Rebuild the container:
     ```
-    docker-compose down
-    docker-compose up
+    docker-compose -f docker-compose.dev.yml down
+    docker-compose -f docker-compose.dev.yml up
     ```
     or 
     ```
@@ -63,7 +65,7 @@ Furthermore, we can obtain the test coverage result, which will show the percent
     ```
 5. Get the status of docker container:
     ```
-    docker-compose ps --all
+    docker-compose -f docker-compose.dev.yml ps --all
     ```
     or
     ```
@@ -109,8 +111,9 @@ Furthermore, we can obtain the test coverage result, which will show the percent
     ```
     make checkmigration
     ```
-11. Format the python code using black formatter (local):
+11. Format the python code using black formatter and sorting the import(local):
     ```
+    isort -rc ./src
     black ./src
     ```
     or 

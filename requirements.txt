@@ -10,7 +10,9 @@ click-plugins==1.1.1
 click-repl==0.2.0
 Django==4.1.7
 djangorestframework==3.14.0
+docutils==0.19
 gunicorn==20.1.0
+isort-black-compat==4.3.211
 kombu==5.2.4
 mypy-extensions==1.0.0
 packaging==23.0

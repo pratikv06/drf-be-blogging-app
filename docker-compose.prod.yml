@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  django_gunicorn:
+    build:
+      context: ./
+      dockerfile: docker/Dockerfile.prod
+    image: blogging:1.0.0
+    container_name: blog-restapi
+    restart: always
+    command: >
+      sh -c "gunicorn website.wsgi:application --bind 0.0.0.0:8000"
+    ports:
+      - 8000:8000
+    volumes:
+      - ./src:/src/app
+      - static:/src/app/static
+    env_file: env/.env
+    depends_on:
+      - db
+    networks:
+      - django_network
+
+  db:
+    image: postgres:13
+    container_name: blog-db
+    ports:
+      - 5433:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file: env/.env.db
+    privileged: true
+    networks:
+      - django_network
+
+  redis:
+    image: redis:7.0.8
+    container_name: blog-redis
+
+  celery:
+    restart: always
+    build:
+      context: ./
+      dockerfile: docker/Dockerfile.prod
+    image: celery
+    container_name: blog-celery
+    command: celery -A website worker -l info
+    volumes:
+      - ./src:/app
+    env_file: env/.env
+    depends_on:
+      - db
+      - redis
+      - django_gunicorn
+
+  nginx:
+    build:
+      context: ./
+      dockerfile: nginx/Dockerfile.nginx
+    image: nginx
+    container_name: blog-nginx
+    volumes:
+      - static:/src/app/static
+    ports:
+      - 80:80
+    depends_on:
+      - django_gunicorn
+    networks:
+      - django_network
+
+volumes:
+  postgres_data:
+  static:
+
+
+networks:
+  django_network:
+    driver: bridge

@@ -3,17 +3,19 @@ version: '3.8'
 services:
 
   api:
-    build: .
+    build:
+      context: ./
+      dockerfile: docker/Dockerfile.dev
     image: blogging:1.0.0
     container_name: blog-restapi
+    restart: always
     command: >
-      sh -c "gunicorn website.wsgi:application --bind 0.0.0.0:8000"
-    # sh -c "python manage.py runserver 0.0.0.0:8000"
+      sh -c "python manage.py runserver 0.0.0.0:8000"
     ports:
       - 8000:8000
     volumes:
-      - ./src:/app
-    env_file: .env
+      - ./src:/src/app
+    env_file: env/.env
     depends_on:
       - db
 
@@ -24,7 +26,7 @@ services:
       - 5433:5432
     volumes:
       - ./.pg_data:/var/lib/postgresql/data
-    env_file: .env.db
+    env_file: env/.env.db
     privileged: true
 
   redis:
@@ -34,13 +36,14 @@ services:
   celery:
     restart: always
     build:
-      context: .
+      context: ./
+      dockerfile: docker/Dockerfile.dev
     image: celery
     container_name: blog-celery
     command: celery -A website worker -l info
     volumes:
       - ./src:/app
-    env_file: .env
+    env_file: env/.env
     depends_on:
       - db
       - redis
